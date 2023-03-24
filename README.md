@@ -1,4 +1,3 @@
-# Re-thinking Model Inversion Attacks Against Deep Neural Networks
 Model inversion (MI) attacks aim to infer and reconstruct private training data by abusing access to a model. MI attacks have raised serious concerns of leaking of sensitive information (e.g. private face images used in training a face recognition system). Recently, several algorithms
 for MI have been proposed to improve the attack performance. In this work, we revisit MI, study two fundamental issues pertaining to all state-of-the-art (SOTA) MI algorithms, and propose solutions to these issues which lead to
 significant boost in attack performance for all SOTA MI. In particular, our contributions are 2-fold: (1) We analyze the optimization objective of SOTA MI algorithms, argue
