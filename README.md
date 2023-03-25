@@ -14,10 +14,10 @@ Singapore University of Technology and Design (SUTD)
 </p>
 
 <p style="center">
-<img width="700" src="./docs/assets/images/framework_v3_page-0001.jpg">
+<img width="1000" src="./docs/assets/images/framework_v3_page-0001.jpg">
 </p>
 
-<h1 align="center">Abstract</h1>
+<h2 align="center">Abstract</h1>
 <table align="center" width="850px">
 <tbody>
 <tr><td>
