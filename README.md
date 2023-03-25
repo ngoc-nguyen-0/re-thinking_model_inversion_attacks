@@ -13,7 +13,7 @@ Singapore University of Technology and Design (SUTD)
 <a href="https://github.com/ngoc-nguyen-0/Re_thinking_MI">Github</a> 
 </p>
 
-<p style="text-align:center;">
+<p style="center">
 <img width="700" src="./docs/assets/images/framework_v3_page-0001.jpg">
 </p>
 
