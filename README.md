@@ -17,7 +17,7 @@
 </div>
 
 <p style="text-align:center;">
-<img width="700" src="./assets/images/framework_v3_page-0001.jpg">
+<img width="700" src="./docs/assets/images/framework_v3_page-0001.jpg">
 </p>
 
 <div class="container" >   
