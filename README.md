@@ -1,95 +1,108 @@
-<!doctype html>
-<title>Re-thinking Model Inversion Attacks Against Deep Neural Networks</title>
-    <html lang="en">
+# Implementation of paper "Re-thinking Model Inversion Attacks Against Deep Neural Networks" - CVPR 2023
+[Paper](https://drive.google.com/file/d/14jzdPKvJ7BVntYdptWmGAPxiVau2TI9e/view?usp=share_link) | [Project page](https://ngoc-nguyen-0.github.io/re-thinking_model_inversion_attacks/)
+## 1. Setup Environment
+This code has been tested with Python 3.7, PyTorch 1.11.0 and Cuda 11.3. 
 
-<head>
-    <meta charset="UTF-8">
-    <!-- If IE use the latest rendering engine -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Set the page to the width of the device and set the zoon level -->
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
+```
+conda create -n MI python=3.7
 
+conda activate MI
 
-<body>
-    <!-- page-header-->
-    <div class="jumbotron" style="background-color:#e0edf9">
-    <div class="container" style="font-family:'Times New Roman',serif">
-        <h1 class="display-1" style="text-align:center; font-weight:bold; font-size:2.0em;letter-spacing:2.0px;">
-            Re-thinking Model Inversion Attacks Against Deep Neural Networks</h1>
-        <hr style="border-top: 1px solid #000000; background: transparent;" class="my-4">
-        
-        <p class="lead" style="text-align:center;font-size:1.25em;">
-            <a href="mailto: thibaongoc_nguyen@mymail.sutd.edu.sg">Ngoc-Bao Nguyen(*)</a> |
-            <a href="mailto: keshigeyan@sutd.edu.sg">Keshigeyan Chandrasegaran(*)</a> |
-            <a href="mailto: milad_abdollahzadeh@sutd.edu.sg">Milad Abdollahzaden</a> |
-            <a href="mailto: ngaiman_cheung@sutd.edu.sg">Ngai-Man Cheung</a> </br>
-        Singapore University of Technology and Design (SUTD)<br/>
-        <em>CVPR-2023</br></em>
-        </p>
-            
-            
-        <p class="lead" style="text-align:center;font-size:1.25em;"> 
-            <a href="https://drive.google.com/file/d/14jzdPKvJ7BVntYdptWmGAPxiVau2TI9e/view?usp=share_link">Paper</a> |
-            <a href="https://github.com/sutd-visual-computing-group/Re-thinking_MI">Github</a> |
-            <a href="https://drive.google.com/drive/folders/1kq4ArFiPmCWYKY7iiV0WxxUSXtP70bFQ?usp=sharing">Models</a> |            
-            <a href="https://colab.research.google.com/drive/1k3ml6cRV0jBZyIKbu8CTBcbraSeNP3w1?usp=sharing">Demo</a> 
-            
-        </p>         
-            
-    </div>
-    </div>
+pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 
-    <div class="container" style="font-family:'Times New Roman',serif">
-        <p style="text-align:center;">
-        <img width="850" src="./docs/assets/images/framework_v3_page-0001.jpg">
-        </p>
-    </div>
-    
-    <!-- Abstract -->
-    <div class="container" style="font-family:'Times New Roman',serif">
-        <h2 class="display-1" style="text-align:center; font-weight:bold; font-size:1.5em;letter-spacing:2.0px;">Abstract</h2>
-        <hr style="border-top: 1px solid #000000; background: transparent;" class="my-4">
-            <p class="lead" style="text-align:left;font-size:1.25em;">
-                Model inversion (MI) attacks aim to infer and reconstruct private training data by abusing access to a model. MI attacks have raised concerns about the leaking of sensitive information (e.g. private face images used in training a face recognition system). Recently, several algorithms for MI have been proposed to improve the attack performance. In this work, we revisit MI, study two fundamental issues pertaining to all state-of-the-art (SOTA) MI algorithms, and propose solutions to these issues which lead to a significant boost in attack performance for all SOTA MI. In particular, our contributions are two-fold: 1) We analyze the optimization objective of SOTA MI algorithms, argue that the objective is sub-optimal for achieving MI, and propose an improved optimization objective that boosts attack performance significantly. 2) We analyze “MI overfitting”, show that it would prevent reconstructed images from learning semantics of training data, and propose a novel “model augmentation” idea to overcome this issue. Our proposed solutions are simple and improve all SOTA MI attack accuracy significantly. E.g., in the standard CelebA benchmark, our solutions improve accuracy by 11.8% and achieve for the first time over 90% attack accuracy. Our findings demonstrate that there is a clear risk of leaking sensitive information from deep learning models. We urge serious consideration to be given to the privacy implications.
+pip install -r requirements.txt
+```
 
-            </p>
+## 2. Prepare Dataset & Checkpoints
 
-    </div>
+* Dowload CelebA and FFHQ dataset at the official website.
+- CelebA: download and extract the [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). Then, place the `img_align_celeba` folder to `.\datasets\celeba`
+
+- FFHQ: download and extract the [FFHQ](https://github.com/NVlabs/ffhq-dataset). Then, place the `thumbnails128x128` folder to `.\datasets\ffhq`
+
+* Download meta data for the experiments at: https://drive.google.com/drive/folders/1kq4ArFiPmCWYKY7iiV0WxxUSXtP70bFQ?usp=sharing
 
 
+* We use the same target models and GAN as previous papers. You can download target models and generator at https://drive.google.com/drive/folders/1kq4ArFiPmCWYKY7iiV0WxxUSXtP70bFQ?usp=sharing
 
-    <!-- Citation -->
-    <div class="container" style="font-family:'Times New Roman',serif">
-        <h2 class="display-1" style="text-align:center; font-weight:bold; font-size:1.5em;letter-spacing:2.0px;">Citation</h2>
-        <hr style="border-top: 1px solid #000000; background: transparent;" class="my-4">
-            
-        <pre class="lead" style="text-align:left;font-size:1.0em;white-space: pre-line;">
-            <code>@inproceedings{anonymous2023rethinking,
-                title     = {Re-thinking Model Inversion Attacks Against Deep Neural Networks},
-                author    = {Ngoc-Bao Nguyen, Keshigeyan Chandrasegaran, Milad Abdollahzadeh, Ngai-man Cheung},
-                booktitle = {Conference on Computer Vision and Pattern Recognition 2023},
-                year      = {2023}</br>}</code>
-        </pre>
-    </div>
+Otherwise, you can train the target classifier and GAN as follow:
+  
+
+### 2.1. Training the target classifier (Optional)
+
+- Modify the configuration in `.\config\celeba\classify.json`
+- Then, run the following command line to get the target model
+  ```
+  python train_classifier.py
+  ```
+
+### 2.2. Training GAN (Optional)
+
+SOTA MI attacks work with a general GAN[1]. However, Inversion-Specific GANs[2] help improve the attack accuracy. In this repo, we provide codes for both training general GAN and Inversion-Specific GAN.
+
+#### 2.2.1. Build a inversion-specific GAN 
+* Modify the configuration in
+  * `./config/celeba/training_GAN/specific_gan/celeba.json` if training a Inversion-Specific GAN on CelebA (KEDMI[2]).
+  * `./config/celeba/training_GAN/specific_gan/ffhq.json` if training a Inversion-Specific GAN on FFHQ (KEDMI[2]).
+  
+* Then, run the following command line to get the Inversion-Specific GAN
+    ```
+    python train_gan.py --configs path/to/config.json --mode "specific"
+    ```
+
+#### 2.2.2. Build a general GAN 
+* Modify the configuration in
+  * `./config/celeba/training_GAN/general_gan/celeba.json` if training a general GAN on CelebA (GMI[1]).
+  * `./config/celeba/training_GAN/general_gan/ffhq.json` if training a general GAN on FFHQ (GMI[1]).
+  
+* Then, run the following command line to get the General GAN
+    ```
+    python train_gan.py --configs path/to/config.json --mode "general"
+    ```
+
+## 3. Learn augmented models
+We provide code to train augmented models (i.e., `efficientnet_b0`, `efficientnet_b1`, and `efficientnet_b3`) from a ***target model***.
+* Modify the configuration in
+  * `./config/celeba/training_augmodel/celeba.json` if training an augmented model on CelebA
+  * `./config/celeba/training_augmodel/ffhq.json` if training an augmented model on FFHQ
+  
+* Then, run the following command line to train augmented models
+    ```
+    python train_augmented_model.py --configs path/to/config.json
+    ```
+
+Pretrained augmented models and p_reg can be downloaded at https://drive.google.com/drive/u/2/folders/1kq4ArFiPmCWYKY7iiV0WxxUSXtP70bFQ
+
+***We remark that if you train augmented models, please do not use our p_reg***. Please delete files in `./p_reg/`. Our code will automatically estimate p_reg with new augmented models.
+
+## 4. Model Inversion Attack
+
+* Modify the configuration in
+  * `./config/celeba/attacking/celeba.json` if training an augmented model on CelebA
+  * `./config/celeba/attacking/ffhq.json` if training an augmented model on FFHQ
+
+* Important arguments:
+  * `method`: select the method either ***gmi*** or ***kedmi***
+  * `variant` select the variant either ***baseline***, ***L_aug***, ***L_logit***, or ***ours***
+
+* Then, run the following command line to attack
+    ```
+    python recovery.py --configs path/to/config.json
+    ```
+
+## 5. Evaluation
+
+After attack, use the same configuration file to run the following command line to get the result:\
+```
+python evaluation.py --configs path/to/config.json
+```
 
 
-    <!-- Acknowledgements -->
-    <div class="container" style="font-family:'Times New Roman',serif">
-        <h2 class="display-1" style="text-align:center; font-weight:bold; font-size:1.5em;letter-spacing:2.0px;">Acknowledgements</h2>
-        <hr style="border-top: 1px solid #000000; background: transparent;" class="my-4">
-            
-            <p class="lead" style="text-align:left;font-size:1.25em;">
-                This research is supported by the National Research Foundation, Singapore under its AI Singapore Programmes (AISG Award No.: AISG2-RP-2021-021; AISG Award No.: AISG2-TC-2022-007). 
-        This project is also supported by SUTD project PIE-SGP-AI-2018-01. We thank reviewers for their valuable comments. We also thank Loo Yi and Kelly Kuo for helpful discussion.
-            </p>
 
-    </div>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-</body>
-</html>
+## Reference
+<a id="1">[1]</a> 
+Zhang, Yuheng, et al. "The secret revealer: Generative model-inversion attacks against deep neural networks." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2020.
+
+
+<a id="2">[2]</a>  Si Chen, Mostafa Kahla, Ruoxi Jia, and Guo-Jun Qi. Knowledge-enriched distributional model inversion attacks. In Proceedings of the IEEE/CVF international conference on computer vision, pages 16178–16187, 2021
